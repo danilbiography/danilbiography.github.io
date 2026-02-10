@@ -1,99 +1,209 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8">
-  <title>Мой сайт</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Security Center</title>
 
-  <style>
-    * { box-sizing: border-box; }
+<style>
+body {
+  margin: 0;
+  font-family: Arial, Helvetica, sans-serif;
+  background: black;
+  color: #00ff66;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  text-align: center;
+  overflow: hidden;
+}
 
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      height: 100vh;
-      color: white;
-      overflow: hidden;
-      background: linear-gradient(120deg, #0f0c29, #302b63, #24243e);
-      animation: gradient 10s ease infinite;
-      background-size: 400% 400%;
-    }
+.box {
+  max-width: 420px;
+  padding: 20px;
+  border: 2px solid #00ff66;
+  border-radius: 12px;
+  box-shadow: 0 0 20px #00ff66;
+  z-index: 1;
+}
 
-    @keyframes gradient {
-      0% { background-position: 0% 50%; }
-      50% { background-position: 100% 50%; }
-      100% { background-position: 0% 50%; }
-    }
+h1 {
+  font-size: 22px;
+}
 
-    .video-bg {
-      position: fixed;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      z-index: -2;
-      opacity: 0.35;
-    }
+#status {
+  margin: 15px 0;
+}
 
-    .overlay {
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.5);
-      z-index: -1;
-    }
+#percent {
+  font-size: 42px;
+  font-weight: bold;
+}
 
-    .card {
-      max-width: 520px;
-      margin: 0 auto;
-      position: relative;
-      top: 50%;
-      transform: translateY(-50%);
-      background: rgba(0, 0, 0, 0.65);
-      padding: 40px;
-      border-radius: 20px;
-      text-align: center;
-      box-shadow: 0 0 60px rgba(0,0,0,0.9);
-    }
+button {
+  margin-top: 20px;
+  padding: 12px 20px;
+  font-size: 16px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+}
 
-    h1 { margin-top: 0; font-size: 36px; }
-    p { opacity: 0.85; line-height: 1.6; margin: 10px 0; }
+.danger {
+  background: red;
+  color: white;
+}
 
-    button {
-      margin-top: 25px;
-      padding: 14px 32px;
-      font-size: 16px;
-      border: none;
-      border-radius: 30px;
-      cursor: pointer;
-      background: linear-gradient(135deg, #ff512f, #dd2476);
-      color: white;
-      transition: transform 0.2s, box-shadow 0.2s;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.4);
-    }
+.safe {
+  background: #00ff66;
+  color: black;
+}
 
-    button:hover {
-      transform: translateY(-3px) scale(1.05);
-      box-shadow: 0 15px 40px rgba(0,0,0,0.6);
-    }
-  </style>
+/* JUMPSCARE */
+#scare {
+  position: fixed;
+  inset: 0;
+  background: black;
+  display: none;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+#scare img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+</style>
 </head>
+
 <body>
 
-  <video class="video-bg" autoplay muted loop>
-    <source src="video/video.mp4" type="video/mp4">
-  </video>
+<div class="box">
+  <h1 id="title">Проверка системы</h1>
+  <div id="status">Инициализация...</div>
+  <div id="percent">0%</div>
+  <button id="btn" class="danger">Устранить угрозу</button>
+</div>
 
-  <div class="overlay"></div>
+<!-- jumpscare -->
+<div id="scare">
+  <img id="scareImg">
+</div>
 
-  <div class="card">
-    <h1>Данил олух</h1>
-    <p>Данил садится играть в 5 утра.</p>
-    <p>Данил не моется.</p>
-    <p>Данил не чистит зубы.</p>
+<script>
+const params = new URLSearchParams(location.search);
 
-    <button onclick="alert('Посхалко 😎')">
-      Нажми меня
-    </button>
-  </div>
+const name = params.get("name") || "Пользователь";
+const type = params.get("type") || "virus";
+const level = params.get("level") || "easy";
+
+const ua = navigator.userAgent;
+const isIOS = /iPhone|iPad/i.test(ua);
+const isWindows = /Windows/i.test(ua);
+
+const title = document.getElementById("title");
+const status = document.getElementById("status");
+const percentEl = document.getElementById("percent");
+const btn = document.getElementById("btn");
+
+title.textContent = `⚠ ${name}, обнаружена угроза`;
+
+let messages = [];
+
+if (type === "update") {
+  messages = [
+    "Подготовка обновления...",
+    "Обновление системы...",
+    "Не выключайте устройство",
+    "Применение изменений..."
+  ];
+  btn.style.display = "none";
+}
+
+if (type === "hack") {
+  messages = [
+    "Удалённый доступ получен",
+    "Копирование данных...",
+    "Доступ к камере...",
+    "Передача файлов..."
+  ];
+}
+
+if (type === "virus") {
+  messages = [
+    "Сканирование памяти...",
+    "Обнаружены вредоносные файлы",
+    "Кража данных возможна",
+    "КРИТИЧЕСКАЯ УГРОЗА"
+  ];
+}
+
+let p = 0;
+const speed = level === "hard" ? 110 : 240;
+
+const scan = setInterval(() => {
+  p++;
+  percentEl.textContent = p + "%";
+
+  if (p % 25 === 0) {
+    status.textContent = messages[Math.floor(p / 25) - 1] || status.textContent;
+  }
+
+  if (p === 100) {
+    clearInterval(scan);
+    setTimeout(jumpscare, 700);
+  }
+}, speed);
+
+// убегающая кнопка
+btn.addEventListener("mouseover", () => {
+  btn.style.position = "absolute";
+  btn.style.left = Math.random() * 70 + "%";
+  btn.style.top = Math.random() * 70 + "%";
+});
+
+function jumpscare() {
+  const scare = document.getElementById("scare");
+  const img = document.getElementById("scareImg");
+
+  // можешь заменить на любые картинки
+  if (isIOS) {
+    img.src = "https://i.imgur.com/7yUvePI.jpg"; // iOS scare
+  } else if (isWindows) {
+    img.src = "https://i.imgur.com/zr6FQ9G.jpg"; // Windows scare
+  } else {
+    img.src = "https://i.imgur.com/zr6FQ9G.jpg";
+  }
+
+  scare.style.display = "flex";
+
+  // звук (резкий)
+  const audio = new Audio("https://www.myinstants.com/media/sounds/scream.mp3");
+  audio.play().catch(()=>{});
+
+  setTimeout(showPrank, 1200);
+}
+
+function showPrank() {
+  document.getElementById("scare").style.display = "none";
+  document.body.style.background = "#111";
+  title.textContent = "😂 ПОПАЛСЯ";
+  status.innerHTML = `
+    Это был пранк 😁<br><br>
+    ${isIOS ? "📱 iOS устройство" : "💻 Windows / ПК"}<br>
+    Ничего не заражено
+  `;
+  percentEl.textContent = "✔";
+  btn.textContent = "Закрыть";
+  btn.className = "safe";
+  btn.style.position = "static";
+  btn.style.display = "inline-block";
+  btn.onclick = () => location.reload();
+}
+</script>
 
 </body>
 </html>
